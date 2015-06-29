@@ -48,7 +48,6 @@ class precip::php {
     'curl',
     'xdebug',
     'imagick',
-    'xhprof',
     'memcached']:
     notify => Service['httpd'],
   }
