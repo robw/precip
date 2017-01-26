@@ -128,8 +128,6 @@ define drupal_vhosts($host, $aliases = [], $path, $drupal = "7", $multisite_dir 
     file {"/srv/www/${path}/sites/${multisite_dir}":
       ensure =>'directory',
       mode => '0775',
-      group => 'www-data',
-      owner => 'www-data',
     }
 
     # Ensure the tree we're going to hide settings in exists

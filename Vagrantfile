@@ -68,7 +68,7 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder drupal_basepath, "/srv/www", owner: "www-data", group: "www-data"
   else
     # For large codebases, rsync is *far* more performant than NFS.
-    config.vm.synced_folder drupal_basepath, "/srv/www", type: "rsync", rsync__exclude: [".git/", "*.sql", "db/"]
+    config.vm.synced_folder drupal_basepath, "/srv/www", type: "rsync", rsync__exclude: [".git/", "*.sql", "db/"], owner: "vagrant", group: "www-data"
     # Vagrant's own rsync plugin is absurdly slow to sync, so use Gatling instead:
     # https://github.com/smerrill/vagrant-gatling-rsync
     # Configure the window for gatling to coalesce writes.
