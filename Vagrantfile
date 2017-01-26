@@ -67,9 +67,17 @@ Vagrant.configure(2) do |config|
     # Windows gets vboxsf, because it can't do nfs + bindfs
     config.vm.synced_folder drupal_basepath, "/srv/www", owner: "www-data", group: "www-data"
   else
-    # Everybody else gets nfs + bindfs, for better small-file read perf
-    config.vm.synced_folder drupal_basepath, "/nfs-www", type: "nfs"
-    config.bindfs.bind_folder "/nfs-www", "/srv/www", user: "vagrant", group: "www-data", chown_ignore: true, chgrp_ignore: true, perms: "u=rwx:g=rwx:o=rx"
+    # For large codebases, rsync is *far* more performant than NFS.
+    config.vm.synced_folder drupal_basepath, "/srv/www", type: "rsync", rsync__exclude: [".git/", "*.sql", "db/"]
+    # Vagrant's own rsync plugin is absurdly slow to sync, so use Gatling instead:
+    # https://github.com/smerrill/vagrant-gatling-rsync
+    # Configure the window for gatling to coalesce writes.
+    if Vagrant.has_plugin?("vagrant-gatling-rsync")
+      config.gatling.latency = 1
+      config.gatling.time_format = "%H:%M:%S"
+      # Automatically sync when machines with rsync folders come up.
+      config.gatling.rsync_on_startup = true
+    end
   end
 
   # MySQL now uses the vagrant-persistent-storage module.
