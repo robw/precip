@@ -6,7 +6,7 @@ internal_hosts = []
 external_hosts = {}
 packaging_mode = false
 
-# Determine if this is our first boot or not. 
+# Determine if this is our first boot or not.
 # If there's a better way to figure this out we now have a single place to change.
 first_boot = true
 if File.file?('.vagrant/machines/default/virtualbox/action_provision')
@@ -84,18 +84,18 @@ Vagrant.configure(2) do |config|
   # Same concept as before & same benefits, but with the added bonus of being a native filesystem instead of a share.
   config.persistent_storage.enabled = true
   config.persistent_storage.location = "mysql.vdi"
-  config.persistent_storage.size = 32768
+  config.persistent_storage.size = 65536
   config.persistent_storage.mountname = 'mysql'
   config.persistent_storage.filesystem = 'ext4'
   config.persistent_storage.mountpoint = '/var/lib/mysql'
-  
-  # Want to mount your *old* MySQL dir so you can copy your old files over? 
+
+  # Want to mount your *old* MySQL dir so you can copy your old files over?
   # Uncomment this and run: vagrant reload && vagrant ssh -c "sudo bash /vagrant/shell/migrate-db.sh"
   #config.vm.synced_folder "mysql", "/var/lib/mysql-old", owner: "mysql", group: "mysql"
-  
+
   # Mount the log directory straight at /var/log/apache2, so PimpMyLog can access it
   config.vm.synced_folder "log", "/var/log/apache2", owner: "www-data", group: "www-data"
-  
+
   # Mount the gitignored puppet/modules directory, for caching
   config.vm.synced_folder "puppet/modules", "/etc/puppet/modules"
 
@@ -113,8 +113,8 @@ Vagrant.configure(2) do |config|
     # https://github.com/geerlingguy/drupal-vm/issues/212
     vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
     # Now that we're off "legacy" paravirtprovider, we can use virtio for nics
-    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-    vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+    vb.customize ["modifyvm", :id, "--nictype1", "Am79C973"]
+    vb.customize ["modifyvm", :id, "--nictype2", "Am79C973"]
     # Defer DNS resolution to the host for performance
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     # Prevent Virtualbox status errors about vram
@@ -156,13 +156,13 @@ Vagrant.configure(2) do |config|
 
   # Set up and use puppet-librarian inside the box to get all our Puppet Modules
   config.vm.provision "shell", path: "shell/librarian.sh"
-  
+
   # Hand off to puppet
   config.vm.provision :puppet, :options => [""] do |puppet|
     puppet.environment_path = "puppet/environments"
     puppet.environment = "vm"
     puppet.hiera_config_path = "puppet/hiera.yaml"
-  
+
     # some facts
     puppet.facter = {
       "drupal_sites_path" => Dir.pwd + "/" + drupal_basepath,
